@@ -1,0 +1,235 @@
+Donate
+loggedinUser.token issue
+
+
+Assignment 2
+===================
+- Priority work on placemark-service.ts row 82
+- bindings check Yes or No visited
+- Placemark page, work on weather widget
+- Adjust the Account page with bindings and $props ?? Pop up won't open with bindables
+- Issues updating placemarks
+- Delete user not 
+- Issue with maps in PlacemarkList bringing about errors when refreshing the page
+- Hashing and salting
+- Image upload issue
+- Why is it that from the Account page I need to click twice on the same category to see the correct chart 
+
+      ##########################  Version 1 CORS ERROR ##########################################  
+
+<script lang="ts">
+  import { placemarkService } from "./services/placemark-service";
+  import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
+  import type { Category, Placemark } from "./types/placemark-types";
+  import { loggedInUser } from "$lib/runes.svelte";
+
+   let categoryId = "";
+  let placemarkId = "";
+  // svelte-ignore non_reactive_update
+  let category: Category | null = null;
+
+
+  let placemark: Placemark = {
+    title: "",
+    lat: "",
+    long: "",
+    address: "",
+    country: "",
+    phone: "",
+    website: "",
+    visited: "",
+    description: ""
+  };
+
+onMount(async () => {
+    // Split the current URL to get categoryId and placemarkId
+    const pathParts = window.location.pathname.split("/");
+    console.log("Path parts:", pathParts); // Log the full path to see if it's what you expect
+
+    // Try to get categoryId and placemarkId from the URL
+    categoryId = pathParts[pathParts.indexOf("category") + 1];
+    placemarkId = pathParts[pathParts.indexOf("editplacemark") + 1];
+    const token = loggedInUser.token;
+
+    // Check if the values are correctly set
+    console.log("categoryId:", categoryId);
+    console.log("placemarkId:", placemarkId);
+
+    // If either ID is missing, log an error, or token
+    if (!categoryId || !placemarkId || !token) {
+      console.error("Invalid categoryId or placemarkId", { categoryId, placemarkId });
+      return; // Stop the rest of the logic if IDs are invalid
+    }
+
+    if (categoryId && placemarkId && token) {
+      try {
+        console.log("categoryId and placemarkId:", categoryId, placemarkId);
+        // Fetch the category and placemark data
+        category = await placemarkService.getCategoryById(categoryId);
+        console.log("Fetched category:", category);
+        console.log("This is the token:", token);
+
+        const myPlacemark = await placemarkService.getPlacemarkById(categoryId, placemarkId);
+        console.log("This is myPlacemark :", myPlacemark);
+        if (placemark) {
+          placemark = myPlacemark;
+        } else {
+          console.error("Placemark not found for ID:", placemarkId);
+        }
+      } catch (error) {
+        console.error("Error fetching placemarks:", error);
+      }
+    }
+  });
+
+ async function updatePlacemark() {
+    const updatedPlacemark = {
+      title: placemark.title,
+      lat: placemark.lat,
+      long: placemark.long,
+      address: placemark.address,
+      country: placemark.country,
+      phone: placemark.phone,
+      website: placemark.website,
+      visited: placemark.visited,
+      description: placemark.description
+    };
+
+    const success = await placemarkService.updatePlacemark(
+      placemarkId,
+      categoryId,
+      updatedPlacemark
+    );
+    console.log("This is the updatedPlacemark: ", success);
+
+    if (success) {
+      console.log("Placemark updated successfully");
+      goto(`/category/${categoryId}`);
+    } else {
+      alert("Failed to update placemark.");
+    }
+  }
+</script>
+###############################################################################
+
+
+
+#################### Version 2 OK, but no update in the database ##################################################
+
+<script lang="ts">
+  import { placemarkService } from "./services/placemark-service";
+  import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
+  import type { Category, Placemark } from "./types/placemark-types";
+  import { loggedInUser } from "$lib/runes.svelte";
+
+let categoryId = "";
+  let placemarkId = "";
+  // svelte-ignore non_reactive_update
+  let category: Category | null = null;
+
+let placemark: Placemark = {
+    title: "",
+    lat: "",
+    long: "",
+    address: "",
+    country: "",
+    phone: "",
+    website: "",
+    visited: "",
+    description: ""
+  };
+
+  onMount(async () => {
+    // Split the current URL to get categoryId and placemarkId
+    const pathParts = window.location.pathname.split("/");
+    console.log("Path parts:", pathParts); // Log the full path to see if it's what you expect
+
+    // Try to get categoryId and placemarkId from the URL
+    categoryId = pathParts[pathParts.indexOf("category") + 1];
+    placemarkId = pathParts[pathParts.indexOf("editplacemark") + 1];
+    const token = loggedInUser.token;
+
+    // Check if the values are correctly set
+    console.log("categoryId:", categoryId);
+    console.log("placemarkId:", placemarkId);
+
+    // If either ID is missing, log an error, or token
+    if (!categoryId || !placemarkId || !token) {
+      console.error("Invalid categoryId or placemarkId", { categoryId, placemarkId });
+      return; // Stop the rest of the logic if IDs are invalid
+    }
+
+    if (categoryId && placemarkId && token) {
+      try {
+        console.log("categoryId and placemarkId:", categoryId, placemarkId);
+        // Fetch the category and placemark data
+        category = await placemarkService.getCategoryById(categoryId);
+        console.log("Fetched category:", category);
+        console.log("This is the token:", token);
+
+        const myPlacemark = await placemarkService.getPlacemarkById(categoryId, placemarkId);
+        console.log("This is myPlacemark :", myPlacemark);
+        if (placemark) {
+          placemark = myPlacemark;
+        } else {
+          console.error("Placemark not found for ID:", placemarkId);
+        }
+      } catch (error) {
+        console.error("Error fetching placemarks:", error);
+      }
+    }
+  });
+
+async function updatePlacemark(updatedPlacemark: {
+    title: string;
+    lat: string;
+    long: string;
+    address: string;
+    country: string;
+    phone: string;
+    website: string;
+    visited: string;
+    description: string;
+  }) {
+    // Don’t fetch the placemark again — use the current form values
+    const newPlacemark = await placemarkService.getPlacemarkById(categoryId, placemarkId);
+
+    console.log("This is the updated placemark: ", newPlacemark, updatedPlacemark); // ✅ Correct object
+
+    if (updatedPlacemark) {
+      goto(`/category/${categoryId}`);
+    } else {
+      alert("Failed to update placemark.");
+    }
+  }
+</script>
+
+++++++ <button onclick={() => updatePlacemark(placemark)} class="button is-info has-text-white"> +++
+
+
+############################################################################################################
+
+
+
+
+
+
+
+Sources
+
+https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow
+https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/main/docs/rules/label-has-associated-control.md
+https://www.npmjs.com/package/@sveltejs/adapter-auto
+https://bobbyhadz.com/blog/npm-err-code-enoent-syscall-open#:~:text=The%20error%20%22npm%20ERR%21%20code%20ENOENT%20syscall%20open%22,generate%20a%20new%20package.json%20file%20in%20the%20directory.
+https://www.npmjs.com/package/svelte-fa
+
+fa-id-card-o
+Hashing and salting passwords
+Link: https://www.npmjs.com/package/bcrypt
+https://dev.to/dev_michael/login-magic-for-your-sveltekit-app-its-easier-than-you-think-51hh
+
+
+Sanitizing input
+https://svelte.dev/playground/cfbe400a07a14d63ad806734dcf99b4b?version=5.25.8 look at donation-svelte  UserCredentials and reproduce in all forms
