@@ -2,13 +2,15 @@
   // https://dev.to/maciekgrzybek/animate-on-scroll-with-svel
   // https://www.npmjs.com/package/svelte-inview
 
-  let { placemarkEvent = null, placemarkDeleteEvent = null } = $props();
+  let { placemarkEvent = null, placemarkDeleteEvent = null , placemarkList = [], enhanceFn, message = $bindable("")} = $props();
 
   import AddPlacemark from "$lib/ui/AddPlacemark.svelte";
   import { placemarkService } from "$lib/ui/services/placemark-service";
   import type { Placemark } from "$lib/ui/types/placemark-types";
   import { goto } from "$app/navigation";
   import DOMPurify from "dompurify";
+
+
 
   /**
    * This is to sanitize any inputs where needed
@@ -29,7 +31,7 @@
   let visited = $state("");
   let img: string[] = [];
   let description = $state("");
-  let message = $state("");
+  // let message = $state("");
 
   async function addPlacemark() {
     // Sanitize user input fields before using them

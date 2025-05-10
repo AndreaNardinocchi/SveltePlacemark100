@@ -22,7 +22,7 @@
   }
 
   onMount(async () => {
-    await placemarkService.refreshPlacemarksInfo();
+    // await placemarkService.refreshPlacemarksInfo();
 
     if (typeof window !== "undefined") {
       const categoryId = window.location.pathname.split("/").pop();
@@ -54,7 +54,7 @@
 
     const success = await placemarkService.deletePlacemark(placemarkId);
     if (success) {
-      await placemarkService.refreshPlacemarksInfo();
+    //   await placemarkService.refreshPlacemarksInfo();
       console.log(`Placemark with ID ${placemarkId} was successfully deleted.`);
 
       if (placemark && placemarkDeletedEvent) {

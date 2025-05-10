@@ -88,11 +88,12 @@
 
 // Import Svelte's `get` function to extract current values from writable stores
 import { get } from "svelte/store";
-import { loggedInUser, user } from "$lib/runes.svelte";
+import { currentCategories, currentPlacemarks, loggedInUser, user } from "$lib/runes.svelte";
 import { currentDataSets } from "$lib/runes.svelte"; // Moved store here
-import { placemarkService } from "./placemark-service";
+// import { placemarkService } from "./placemark-service";
 import LeafletMap from "../LeafletMap.svelte";
 import type { Placemark } from "../types/placemark-types";
+import type Category from "../../../routes/category/[id]/Category.svelte";
 
 // Reactive placemark list (as before)
 // const placemarkList = currentPlacemarks.placemarks;
@@ -161,7 +162,7 @@ export function computeByVisited(placemarkList: Placemark[]) {
 // export async function refreshPlacemarkMap(map: LeafletMap, placemarkList: any[]) {
 export async function refreshPlacemarkMap(map: LeafletMap, placemarkList: Placemark[]) {
   if (!loggedInUser.token) {
-    placemarkService.restoreSession();
+    // placemarkService.restoreSession();
   }
 
   placemarkList.forEach((placemark) => {
@@ -178,4 +179,21 @@ export async function refreshPlacemarkMap(map: LeafletMap, placemarkList: Placem
 
   computeByCountry(placemarkList);
   computeByVisited(placemarkList);
+}
+
+export async function refreshCategoryState(categories: Category[], placemarks: Placemark[]) {
+  currentCategories.categories = categories;
+  currentPlacemarks.placemarks = placemarks;
+
+  computeByCountry(currentPlacemarks.placemarks);
+  computeByVisited(currentPlacemarks.placemarks);
+}
+
+export function clearCategoryState() {
+  currentCategories.categories = [];
+  currentPlacemarks.placemarks = [];
+  loggedInUser.email = "";
+  loggedInUser.name = "";
+  loggedInUser.token = "";
+  loggedInUser._id = "";
 }

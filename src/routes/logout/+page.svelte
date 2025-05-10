@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
-  import { placemarkService } from "$lib/ui/services/placemark-service";
-  placemarkService.clearSession();
-  goto("/");
+  import { clearCategoryState } from "$lib/ui/services/placemark-utils";
+  clearCategoryState();
+  if (browser)  goto("/");
 </script>

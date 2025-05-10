@@ -20,9 +20,23 @@
   //export let key: any;
 
   let pageTitle: any = "Welcome to PlaceMark"; // This can be dynamic
-  onMount(async () => {
-    await placemarkService.restoreSession();
-  });
+  // onMount(async () => {
+  //   await placemarkService.restoreSession();
+  // });
+  export let data: any;
+  if (data.session) {
+    loggedInUser.email = data.session.email;
+    loggedInUser.name = data.session.name;
+    loggedInUser.token = data.session.token;
+    loggedInUser._id = data.session._id;
+  } else {
+    loggedInUser.email = "";
+    loggedInUser.name = "";
+    loggedInUser.token = "";
+    loggedInUser._id = "";
+  }
+
+  console.log("LoggedInUser: ", loggedInUser.email);
 </script>
 
 <svelte:head>

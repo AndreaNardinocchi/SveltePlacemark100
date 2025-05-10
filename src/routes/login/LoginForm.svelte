@@ -39,6 +39,7 @@
       {#if message}
         <Message {message} />
       {/if}
+      <h2 class="subtitle is-size-4 pt-4 mb-4">Let's take off...</h2>
       <form method="POST" action="?/login">
         <UserCredentials />
         <!-- Submit Button -->

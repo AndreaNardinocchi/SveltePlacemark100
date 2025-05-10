@@ -20,7 +20,6 @@
   }
 </script>
 
-<h2 class="subtitle is-size-4 pt-4 mb-4">Let's take off...</h2>
 <!-- Email Field with Icon -->
 <div class="field">
   <label class="label">
