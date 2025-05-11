@@ -1,14 +1,13 @@
-
 <script lang="ts">
   //import { currentDataSets } from "$lib/runes.svelte"; // or ./stores.ts
   import { derived } from "svelte/store";
+
+  export let data;
 
   let totalByCountry;
   let totalByVisited;
 
   $currentDataSets; // subscribe
-
- 
 
   $: totalByCountry = $currentDataSets.totalByCountry;
   $: totalByVisited = $currentDataSets.totalByVisited;
@@ -18,7 +17,12 @@
   import { onMount } from "svelte";
   import Category from "./Category.svelte";
   import type { Placemark } from "$lib/ui/types/placemark-types";
-  import { currentCategories, currentDataSets, currentPlacemarks, placemark } from "$lib/runes.svelte";
+  import {
+    currentCategories,
+    currentDataSets,
+    currentPlacemarks,
+    placemark
+  } from "$lib/runes.svelte";
   import CategoryBanner from "$lib/ui/CategoryBanner.svelte";
   import PlacemarkStats from "$lib/ui/PlacemarkStats.svelte";
   import PlacemarkListCard from "$lib/ui/PlacemarkListCard.svelte";
@@ -27,8 +31,8 @@
   import Chart from "svelte-frappe-charts";
   import LeafletMap from "$lib/ui/LeafletMap.svelte";
   import { refreshCategoryState, refreshPlacemarkMap } from "$lib/ui/services/placemark-utils";
-    import type { PageProps } from "./$types.js";
-    import type { ActionResult } from "@sveltejs/kit";
+  import type { PageProps } from "./$types.js";
+  import type { ActionResult } from "@sveltejs/kit";
 
   let map: LeafletMap;
 
@@ -36,7 +40,7 @@
   //  * @type {any}
    */
   let { data }: PageProps = $props();
-   refreshCategoryState(data.categories, data.placemarks); 
+  refreshCategoryState(data.categories, data.placemarks);
   let pageTitle: any = "";
 
   let categoryId: string;
@@ -103,9 +107,8 @@
       console.warn("statsComponent.refresh not available");
     }
   }
- 
-  let message="";
-  
+
+  let message = "";
 
   const handlePlacemarkSuccess = () => {
     return async ({ result }: { result: ActionResult }) => {
@@ -113,7 +116,7 @@
         const placemark = result.data as Placemark;
         currentPlacemarks.placemarks.push(placemark);
         const popup = `${placemark.title}, ${placemark.country}, ${placemark.address} | Visited: ${placemark.visited} | Geo: ${placemark.lat} / ${placemark.long}`;
-    map.addMarker(parseFloat(placemark.lat), parseFloat(placemark.long), popup);
+        map.addMarker(parseFloat(placemark.lat), parseFloat(placemark.long), popup);
         map.moveTo(parseFloat(placemark.lat), parseFloat(placemark.long));
         refreshCategoryState(currentCategories.categories, currentPlacemarks.placemarks);
         message = `Thanks! You added ${placemark.title}`;
@@ -165,7 +168,12 @@
         </div>
       </div>
       <PlacemarkListCard>
-        <ListPlacemarks placemarkDeletedEvent={placemarkDeleted} placemarkList={currentCategories.categories} enhanceFn={handlePlacemarkSuccess} {message}/>
+        <ListPlacemarks
+          placemarkDeletedEvent={placemarkDeleted}
+          placemarkList={currentCategories.categories}
+          enhanceFn={handlePlacemarkSuccess}
+          {message}
+        />
       </PlacemarkListCard>
     {/if}
     <Category placemarkEvent={placemarkAdded} />

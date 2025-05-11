@@ -41,6 +41,39 @@ export const placemarkService = {
     }
   },
 
+  async getUserById(id: string): Promise<User | null> {
+    try {
+      const user = await userStore.findOne(id);
+      console.log(JSON.parse(JSON.stringify(user)));
+      return JSON.parse(JSON.stringify(user));
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      return null;
+    }
+  },
+
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const users = await userStore.find();
+      console.log(JSON.parse(JSON.stringify(users)));
+      return JSON.parse(JSON.stringify(users));
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      return [];
+    }
+  },
+
+  async getAllCategories(): Promise<Category[]> {
+    try {
+      const categories = await categoryMongoStore.find();
+      console.log(JSON.parse(JSON.stringify(categories)));
+      return JSON.parse(JSON.stringify(categories));
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      return [];
+    }
+  },
+
   // This is the function that enables the user to add a new category
   async addCategory(category: Category) {
     try {
@@ -48,15 +81,6 @@ export const placemarkService = {
       return JSON.parse(JSON.stringify(newCategory));
     } catch (error) {
       return false;
-    }
-  },
-
-  async getAllCategories(): Promise<Category[]> {
-    try {
-      return await CategoryMongoose.find().lean();
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      return [];
     }
   },
 

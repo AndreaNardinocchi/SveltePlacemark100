@@ -4,12 +4,16 @@ import { UserMongoose } from "./user.js";
 export const userStore = {
   async find(): Promise<User[]> {
     const users = await UserMongoose.find().lean();
+    console.log("Mongoose user:", users);
     return users;
   },
 
   async findOne(id: string): Promise<User | null> {
     if (id) {
       const user = await UserMongoose.findOne({ _id: id }).lean();
+
+      // await UserMongoose.findOne({ _id: id }).lean();
+      console.log("This is the user by id: ", user);
       return user;
     }
     return null;
@@ -23,6 +27,8 @@ export const userStore = {
 
   async findBy(email: string): Promise<User | null> {
     const user = await UserMongoose.findOne({ email: email }).lean();
+    console.log("user by email:", user);
+    console.log("UserMongoose model:", UserMongoose);
     return user;
   },
 

@@ -1,18 +1,8 @@
 <script lang="ts">
-  // https://www.npmjs.com/package/svelte-fa
   import Account from "./Account.svelte";
-  // @ts-ignore
-  export const load = async ({ page }) => ({
-    props: {
-      key: page.path
-    }
-  });
+  export let data;
 
-  /**
-   * @type {any}
-   */
-
-  let pageTitle: any = "Your Account Details | PlaceMark";
+  let pageTitle = "Your Account Details | PlaceMark";
 </script>
 
 <svelte:head>
@@ -20,5 +10,5 @@
 </svelte:head>
 
 <div class="container">
-  <Account />
+  <Account user={data.user} />
 </div>

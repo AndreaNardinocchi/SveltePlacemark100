@@ -3,16 +3,13 @@ import { CategoryMongoose } from "./category";
 import { placemarkMongoStore } from "./placemark-store";
 
 export const categoryMongoStore = {
-  async getAllCategories(): Promise<Category[]> {
-    try {
-      return await CategoryMongoose.find().lean();
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      return [];
-    }
+  async find(): Promise<Category[]> {
+    const categories = await CategoryMongoose.find().lean();
+    console.log("Mongoose categories:", categories);
+    return categories;
   },
 
-  async getCategoryById(id: string): Promise<Category | null> {
+  async findOne(id: string): Promise<Category | null> {
     if (!id) return null;
 
     const category = await CategoryMongoose.findById(id).lean();
@@ -25,14 +22,16 @@ export const categoryMongoStore = {
     return category;
   },
 
-  async addCategory(category: Omit<Category, "_id">): Promise<Category | null> {
-    const newCategory = new CategoryMongoose(category);
-    const saved = await newCategory.save();
-    return this.getCategoryById(saved._id.toString());
-  },
+  // async addCategory(category: Omit<Category, "_id">): Promise<Category | null> {
+  //   const newCategory = new CategoryMongoose(category);
+  //   const saved = await newCategory.save();
+  //   return this.getCategoryById(saved._id.toString());
+  // },
 
-  async getUserCategories(userId: string): Promise<Category[]> {
-    return await CategoryMongoose.find({ userid: userId }).lean();
+  async findBy(userid: string): Promise<Category[]> {
+    const categories = await CategoryMongoose.find({ userid }).lean();
+    console.log("Mongoose categories:", categories);
+    return categories;
   },
 
   async deleteCategoryById(id: string): Promise<void> {

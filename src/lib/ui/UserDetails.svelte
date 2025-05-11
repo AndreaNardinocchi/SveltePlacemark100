@@ -5,8 +5,8 @@
   import type { User } from "./types/placemark-types";
   import { goto } from "$app/navigation";
   import { fly } from "svelte/transition";
-
-  let user: User;
+  export let user;
+  //let user: User;
   let showModal = false; // Controls modal visibility
 
   const token = loggedInUser.token;
@@ -18,13 +18,16 @@
   onMount(async () => {
     if (token && email) {
       try {
-        const users = await placemarkService.getAllUsers(token);
-        const matchedUser = users.find((user) => user.email === email);
+        const matchedUser = await placemarkService.getUserById(loggedInUserId);
+        // await placemarkService.getUserByEmail(email);
+
+        console.log("Id: ", loggedInUserId);
+        //  const matchedUser = users.find((user) => user.email === email);
         if (matchedUser) {
           user = matchedUser;
-          console.log("Matched user:", user);
+          console.log("Matched user:", matchedUser);
         } else {
-          console.log("No user found matching email.");
+          console.log("No user found matching id.");
         }
       } catch (error) {
         console.error("Failed to fetch or filter user:", error);

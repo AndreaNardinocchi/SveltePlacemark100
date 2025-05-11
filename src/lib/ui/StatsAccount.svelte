@@ -10,9 +10,11 @@
   import DOMPurify from "dompurify";
   import { goto } from "$app/navigation";
 
+  export let user;
+
   let categories: any[] = [];
   let placemarks: any[] = [];
-  let user: User;
+  // let user: User;
   let categoryPlacemarks: never[] = [];
   console.log("These are the categoryPlacemarks: ", categoryPlacemarks);
 
@@ -64,8 +66,8 @@
   onMount(async () => {
     if (token && email) {
       try {
-        const users = await placemarkService.getAllUsers(token);
-        const matchedUser = users.find((user) => user.email === email);
+        const matchedUser = await placemarkService.getUserById(loggedInUser._id);
+        // const matchedUser = users.find((user) => user.email === email);
         if (matchedUser) {
           user = matchedUser;
           console.log("Matched user:", user);

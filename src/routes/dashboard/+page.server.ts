@@ -35,13 +35,16 @@
 // };
 
 import { placemarkService } from "$lib/ui/services/placemark-service";
-import type { Session } from "inspector";
-import type { PageServerLoad } from "./$types";
+import type { PageServerLoad, Actions } from "./$types";
 
-export const load: PageServerLoad = async () => {
-  // const categoryId = params.id;
+export const load: PageServerLoad = async ({ cookies }) => {
+  const cookieStr = cookies.get("placemark-user");
+  if (!cookieStr) {
+    return { categories: [] };
+  }
 
   const categories = await placemarkService.getAllCategories();
+
   const serializedCategories = categories.map((cat) => ({
     ...cat,
     _id: cat._id.toString(),
@@ -55,27 +58,26 @@ export const load: PageServerLoad = async () => {
 
   return {
     categories: serializedCategories
-    // placemarks: await placemarkService.getPlacemarksByCategoryId(categoryId)
   };
 };
-export const actions = {
+
+export const actions: Actions = {
   category: async ({ request, cookies }) => {
-    const cookieStr = cookies.get("placemark-user") as string;
-    if (cookieStr) {
-      const session = JSON.parse(cookieStr) as Session;
-      if (session) {
-        const form = await request.formData();
-        const category = {
-          title: form.get("title") as string,
-          notes: form.get("notes") as string,
-          image: form.get("image") as string,
-          userid: form.get("userid") as string,
-          placemarks: [], // correctly typed as an array
-          loggedInUser: session._id
-        };
-        const newCategory = await placemarkService.addCategory(category);
-        return newCategory;
-      }
-    }
+    const cookieStr = cookies.get("placemark-user");
+    if (!cookieStr) return;
+
+    const session = JSON.parse(cookieStr);
+    const form = await request.formData();
+
+    const category = {
+      title: form.get("title") as string,
+      notes: form.get("notes") as string,
+      image: form.get("image") as string,
+      userid: session._id,
+      placemarks: []
+    };
+
+    const newCategory = await placemarkService.addCategory(category);
+    return { success: true, category: newCategory };
   }
 };

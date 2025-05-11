@@ -30,8 +30,8 @@ export interface Category {
   notes: string;
   // img: string;
   image: string;
-  userid: string;
-  _id?: string;
+  userid: User | string;
+  // _id?: string;
 }
 
 export interface Placemark {

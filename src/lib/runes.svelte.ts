@@ -21,7 +21,8 @@ export const user = $state({
   phoneNumber: "",
   email: "",
   password: "",
-  _id: ""
+  createdTimeStamp: ""
+  // _id: ""
 });
 
 export const category = $state({

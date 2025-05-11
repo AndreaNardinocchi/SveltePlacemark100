@@ -1,12 +1,12 @@
 <script lang="ts">
-  // https://dev.to/maciekgrzybek/animate-on-scroll-with-svel
-  // https://www.npmjs.com/package/svelte-inview
   import UserDetails from "$lib/ui/UserDetails.svelte";
   import StatsAccount from "$lib/ui/StatsAccount.svelte";
+
+  export let user;
 </script>
 
 <section class="section mt-6 pt-6">
-  <UserDetails />
+  <UserDetails {user} />
   <div class="columns mt-2">
     <div class="column is-3"></div>
     <div class="column is-6">
@@ -15,6 +15,6 @@
     <div class="column is-3"></div>
   </div>
   <section class="pt-4">
-    <StatsAccount />
+    <StatsAccount {user} />
   </section>
 </section>
