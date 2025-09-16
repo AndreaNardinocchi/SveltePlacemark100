@@ -1,5 +1,5 @@
 import type { Placemark } from "$lib/ui/types/placemark-types";
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { Model } from "mongoose";
 
 const placemarkSchema = new mongoose.Schema<Placemark>({
   title: String,
@@ -17,10 +17,9 @@ const placemarkSchema = new mongoose.Schema<Placemark>({
     default: undefined,
     required: false
   },
-  categoryid: {
-    type: Schema.Types.ObjectId,
-    ref: "Category",
-    required: true
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category"
   }
 });
 

@@ -22,6 +22,8 @@ export interface User {
 }
 
 export interface Category {
+  _id: string;
+  //  _id: any;
   // thisUserCategory: Placemark;
   // thisUserCategory: Placemark[];
   placemarks: Placemark[];
@@ -35,7 +37,8 @@ export interface Category {
 }
 
 export interface Placemark {
-  categoryId: string;
+  //categoryId: string;
+  category: Category | string;
   title: string;
   lat: string;
   long: string;
@@ -53,4 +56,25 @@ export interface Placemark {
 export interface DataSet {
   labels: string[];
   datasets: [{ values: number[] }];
+}
+
+export interface PlacemarkService {
+  signup(user: User): Promise<boolean>;
+  login(email: string, password: string): Promise<Session | null>;
+
+  getUserById(id: string): Promise<User | null>;
+  getAllUsers(): Promise<User[]>;
+
+  addCategory(category: Category): Promise<Category | false>;
+  getAllCategories(): Promise<Category[]>;
+  getCategoriesByUserId(id: string): Promise<Category[]>;
+  getCategoryById(id: string): Promise<Category | null>;
+  updateCategory(id: string, updatedCategory: Partial<Category>): Promise<boolean>;
+  deleteCategory(id: string): Promise<boolean>;
+
+  addPlacemark(categoryId: string, placemark: Placemark): Promise<Placemark | null>;
+  getPlacemarksByCategoryId(categoryId: string): Promise<Placemark[]>;
+  getPlacemarkById(id: string): Promise<Placemark | null>;
+  updatePlacemark(id: string, updatedPlacemark: Partial<Placemark>): Promise<boolean>;
+  deletePlacemark(id: string): Promise<boolean>;
 }

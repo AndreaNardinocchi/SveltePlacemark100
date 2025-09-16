@@ -24,6 +24,7 @@
 
 // export { CategoryMongoose };
 
+import { placemark } from "$lib/runes.svelte";
 import type { Category } from "$lib/ui/types/placemark-types";
 import type { Document, Model } from "mongoose";
 import mongoose from "mongoose";
@@ -35,7 +36,7 @@ const categorySchema = new mongoose.Schema<CategoryDoc>({
   notes: String,
   image: String,
   // id: String,
-  // placemarks: Array, // Adjust the type as necessary
+  placemarks: Array, // Adjust the type as necessary
   userid: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"

@@ -29,9 +29,9 @@ export const category = $state({
   title: "",
   notes: "",
   userId: "",
-  image: "",
+  image: ""
   // img: "",
-  _id: ""
+  // _id: ""
 });
 
 export const placemark = $state({

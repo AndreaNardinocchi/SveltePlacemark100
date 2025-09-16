@@ -76,7 +76,7 @@
   import ListCategories from "$lib/ui/ListCategories.svelte";
   import AddCategory from "$lib/ui/AddCategory.svelte";
   import PlacemarkListCard from "$lib/ui/PlacemarkListCard.svelte";
-  import Chart from "svelte-frappe-charts";
+  // import Chart from "svelte-frappe-charts";
   import Dashboard from "./Dashboard.svelte";
 
   export let data: {

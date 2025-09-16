@@ -2,7 +2,7 @@
   import { fly } from "svelte/transition";
   import { placemarkService } from "./services/placemark-service";
   import { goto } from "$app/navigation";
-  import { currentCategories } from "$lib/runes.svelte";
+  import { currentCategories, loggedInUser } from "$lib/runes.svelte";
   import DOMPurify from "dompurify"; // Import DOMPurify for sanitization
 
   // Function to delete a category
@@ -13,12 +13,16 @@
       console.warn("No category ID provided.");
       return;
     }
-
-    const category = await placemarkService.getCategoryById(categoryId);
+    const category = currentCategories.categories.find((category) => category._id === categoryId);
+    // const categoryIdToDelete = category?._id;
+    console.log("CategoryId to delete: ", categoryId);
+    // const category = await placemarkService.getCategoryById(categoryId);
+    console.log("This is the category to delete: ", category);
     if (!category) {
       console.warn("Invalid category returned.");
       return;
     }
+
 
     const success = await placemarkService.deleteCategory(categoryId);
     if (success) {

@@ -80,7 +80,7 @@
     let success = await placemarkService.addCategory(category);
     if (success) {
       localStorage.setItem("categoryTitle", category.title);
-      placemarkService.refreshPlacemarksInfo();
+
       goto("/dashboard");
     } else {
       message = "Error Trying to sign up";

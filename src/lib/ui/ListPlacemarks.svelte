@@ -11,97 +11,110 @@
   import { map } from "leaflet";
   import type { Placemark } from "./types/placemark-types";
 
-  export let placemarkDeletedEvent: (placemark: Placemark) => void;
+  // export let placemarkDeletedEvent: (placemark: Placemark) => void;
 
-  const url = window.location.pathname;
-  const categoryId = url.split("/").pop();
-  let category = currentCategories.categories.find((cat) => cat._id === categoryId);
+  let { placemarks } = $props();
+  console.log("ListPlacemarks: ", placemarks);
 
-  function sanitizeInput(input: string): string {
-    return DOMPurify.sanitize(input);
-  }
+  // const url = window.location.pathname;
+  // const categoryId = url.split("/").pop();
+  // let category = currentCategories.categories.find((cat) => cat._id === categoryId);
 
-  onMount(async () => {
-    // await placemarkService.refreshPlacemarksInfo();
+  // function sanitizeInput(input: string): string {
+  //   return DOMPurify.sanitize(input);
+  // }
 
-    if (typeof window !== "undefined") {
-      const categoryId = window.location.pathname.split("/").pop();
-      console.log("Category ID:", categoryId);
-    }
+  // onMount(async () => {
+  //   // await placemarkService.refreshPlacemarksInfo();
 
-    const token = loggedInUser.token;
+  //   if (typeof window !== "undefined") {
+  //     const categoryId = window.location.pathname.split("/").pop();
+  //     console.log("Category ID:", categoryId);
+  //   }
 
-    if (token && categoryId) {
-      const result = await placemarkService.getCategoryById(categoryId);
-      if (result) {
-        category = result;
-        currentPlacemarks.placemarks = result.placemarks;
-        console.log("Our placemarks: ", result.placemarks);
-      } else {
-        console.warn("Category not found.");
-      }
-    } else {
-      console.warn("Invalid category ID or token.");
-    }
-  });
+  //   const token = loggedInUser.token;
 
-  async function deletePlacemark(placemarkId: string) {
-    const placemark = currentPlacemarks.placemarks.find((p) => p._id === placemarkId);
-    if (!placemarkId) {
-      console.warn("No placemark ID provided.");
-      return;
-    }
+  //   if (token && categoryId) {
+  //     const result = await placemarkService.getCategoryById(categoryId);
+  //     if (result) {
+  //       category = result;
+  //       currentPlacemarks.placemarks = result.placemarks;
+  //       const placemarks = await placemarkService.getPlacemarksByCategoryId(categoryId);
+  //       console.log("Mongoose placemarks: ", placemarks);
+  //       console.log("Our placemarks: ", result.placemarks);
+  //     } else {
+  //       console.warn("Category not found.");
+  //     }
+  //   } else {
+  //     console.warn("Invalid category ID or token.");
+  //   }
+  // });
 
-    const success = await placemarkService.deletePlacemark(placemarkId);
-    if (success) {
-    //   await placemarkService.refreshPlacemarksInfo();
-      console.log(`Placemark with ID ${placemarkId} was successfully deleted.`);
+  // async function deletePlacemark(placemarkId: string) {
+  //   const placemark = currentPlacemarks.placemarks.find((p) => p._id === placemarkId);
+  //   if (!placemarkId) {
+  //     console.warn("No placemark ID provided.");
+  //     return;
+  //   }
 
-      if (placemark && placemarkDeletedEvent) {
-        placemarkDeletedEvent(placemark);
-      }
+  //   const success = await placemarkService.deletePlacemark(placemarkId);
+  //   if (success) {
+  //     //   await placemarkService.refreshPlacemarksInfo();
+  //     console.log(`Placemark with ID ${placemarkId} was successfully deleted.`);
 
-      goto(`/category/${category?._id}`);
-    } else {
-      console.warn("Failed to delete placemark.");
-    }
-  }
+  //     // if (placemark && placemarkDeletedEvent) {
+  //     //   placemarkDeletedEvent(placemark);
+  //     // }
 
-  async function onPlacemarkSelect(categoryId: string, placemarkId: string, event: Event) {
-    event.preventDefault();
+  //     goto(`/category/${category?._id}`);
+  //   } else {
+  //     console.warn("Failed to delete placemark.");
+  //   }
+  // }
 
-    const validCategory = currentCategories.categories.find((cat) => cat._id === categoryId);
-    if (!validCategory) {
-      console.warn("Selected category not found.");
-      return;
-    }
+  // // let placemarks = "";
 
-    try {
-      const updatedPlacemark = await placemarkService.getPlacemarkById(placemarkId);
-      if (!updatedPlacemark) {
-        console.warn("Could not fetch updated placemark.");
-        return;
-      }
+  // async function onPlacemarkSelect(categoryId: string, placemarkId: string, event: Event) {
+  //   event.preventDefault();
 
-      localStorage.setItem("placemarkId", placemarkId); // Save for refresh
+  //   const validCategory = currentCategories.categories.find((cat) => cat._id === categoryId);
+  //   if (!validCategory) {
+  //     console.warn("Selected category not found.");
+  //     return;
+  //   }
 
-      // Update local state
-      const index = currentPlacemarks.placemarks.findIndex((p) => p._id === placemarkId);
-      if (index !== -1) {
-        currentPlacemarks.placemarks[index] = updatedPlacemark;
-      } else {
-        currentPlacemarks.placemarks.push(updatedPlacemark);
-      }
+  //   try {
+  //     const updatedPlacemark = await placemarkService.getPlacemarkById(placemarkId);
+  //     if (!updatedPlacemark) {
+  //       console.warn("Could not fetch updated placemark.");
+  //       return;
+  //     }
 
-      goto(`/category/${categoryId}/placemark/${placemarkId}`);
-    } catch (err) {
-      console.error("Error in onPlacemarkSelect:", err);
-    }
-  }
+  //     localStorage.setItem("placemarkId", placemarkId); // Save for refresh
+  //     const placemarks = await placemarkService.getPlacemarksByCategoryId(categoryId);
+  //     console.log("Mongoose placemarks: ", placemarks);
+
+  //     // Update local state
+  //     //  const index = currentPlacemarks.placemarks.findIndex((p) => p._id === placemarkId);
+  //     const index = placemarks.findIndex((p) => p._id === placemarkId);
+  //     if (index !== -1) {
+  //       //  currentPlacemarks.placemarks[index] = updatedPlacemark;
+  //       placemarks[index] = updatedPlacemark;
+  //     } else {
+  //       //  currentPlacemarks.placemarks.push(updatedPlacemark);
+  //       placemarks.push(updatedPlacemark);
+  //     }
+
+  //     goto(`/category/${categoryId}/placemark/${placemarkId}`);
+  //   } catch (err) {
+  //     console.error("Error in onPlacemarkSelect:", err);
+  //   }
+  // }
 </script>
 
 <div class="mt-6"></div>
-{#each currentPlacemarks.placemarks as placemark}
+<!-- {#each currentPlacemarks.placemarks as placemark} -->
+{#each placemarks as placemark}
   <div class="card has-text-dark-grey" in:fly={{ y: 200, duration: 3000 }}>
     <header class="card-header has-text-centered">
       <p class="card-header-title">

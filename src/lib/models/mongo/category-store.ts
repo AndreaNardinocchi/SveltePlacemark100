@@ -12,15 +12,37 @@ export const categoryMongoStore = {
   async findOne(id: string): Promise<Category | null> {
     if (!id) return null;
 
-    const category = await CategoryMongoose.findById(id).lean();
-    if (category) {
-      category.placemarks = await placemarkMongoStore.getPlacemarksByCategoryId(
-        category._id as string
-      );
-    }
+    try {
+      const category = await CategoryMongoose.findById(id).lean();
+      console.log("This is the category: ", category);
 
-    return category;
+      if (!category) return null;
+
+      // Ensure placemarks are populated safely
+      const placemarks = await placemarkMongoStore.find(category._id.toString());
+
+      return {
+        ...category,
+        placemarks
+      } as Category;
+    } catch (error) {
+      console.error("Error fetching category by ID:", error);
+      return null;
+    }
   },
+
+  // async findOne(id: string): Promise<Category | null> {
+  //   if (!id) return null;
+
+  //   const category = await CategoryMongoose.findById(id).lean();
+  //   if (category) {
+  //     category.placemarks = await placemarkMongoStore.find(
+  //       category._id as string
+  //     );
+  //   }
+
+  //   return category;
+  // },
 
   // async addCategory(category: Omit<Category, "_id">): Promise<Category | null> {
   //   const newCategory = new CategoryMongoose(category);
@@ -28,17 +50,33 @@ export const categoryMongoStore = {
   //   return this.getCategoryById(saved._id.toString());
   // },
 
+  async add(category: Omit<Category, "_id">): Promise<Category | null> {
+    const newCategory = new CategoryMongoose({ ...category });
+    await newCategory.save();
+    const populatedCategory = await CategoryMongoose.findById(newCategory._id)
+      .populate("categories")
+      .lean();
+    return populatedCategory;
+  },
+
   async findBy(userid: string): Promise<Category[]> {
     const categories = await CategoryMongoose.find({ userid }).lean();
-    console.log("Mongoose categories:", categories);
+    console.log("Mongoose categories by user id:", categories);
     return categories;
   },
 
-  async deleteCategoryById(id: string): Promise<void> {
+  async deleteOne(id: string) {
     try {
-      await CategoryMongoose.deleteOne({ _id: id });
+      console.log("ID to delete: ", id);
+      const result = await CategoryMongoose.deleteOne({ _id: id });
+      if (result.deletedCount === 0) {
+        console.warn(`No category found with id: ${id}`);
+        return false;
+      }
+      return true;
     } catch (error) {
-      console.error("Invalid category ID:", id);
+      console.error(`Error deleting category with id ${id}:`, error);
+      return false;
     }
   },
 

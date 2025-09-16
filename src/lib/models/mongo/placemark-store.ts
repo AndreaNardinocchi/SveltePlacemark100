@@ -1,31 +1,63 @@
 import { PlacemarkMongoose } from "./placemark.js";
 import type { Placemark } from "$lib/ui/types/placemark-types";
+import mongoose from "mongoose";
 
 export const placemarkMongoStore = {
-  async getAllPlacemarks(): Promise<Placemark[]> {
-    return await PlacemarkMongoose.find().lean();
+  async find(): Promise<Placemark[]> {
+    const placemarks = await PlacemarkMongoose.find().lean();
+    console.log("PLACEMARKS: ", placemarks);
+    return placemarks;
   },
 
-  async addPlacemark(
-    categoryId: string,
-    placemark: Omit<Placemark, "_id">
-  ): Promise<Placemark | null> {
+  async add(categoryId: string, placemark: Omit<Placemark, "_id">): Promise<Placemark | null> {
+    const newPlacemark = new PlacemarkMongoose({ ...placemark });
+    await newPlacemark.save();
+    const populatedPlacemark = await PlacemarkMongoose.findById(newPlacemark._id)
+      .populate("placemark")
+      .populate("category")
+      .lean();
+    console.log("These are populatedPlacemarks: ", populatedPlacemark);
+    return populatedPlacemark;
+  },
+
+  async delete() {
+    await PlacemarkMongoose.deleteMany({});
+  },
+
+  // async findBy(categoryId: string): Promise<Placemark[]> {
+  //   // Retrieve placemarks from the database based on the categoryId
+  //   const placemarks = await PlacemarkMongoose.find({ categoryId }).lean();
+  //   console.log("PLACEMARKS: ", placemarks);
+
+  //   // Ensure the 'img' field is always an array
+  //   return placemarks.map((p) => ({
+  //     ...p,
+  //     img: Array.isArray(p.img) ? p.img : [] // If img is not an array, make it an empty array
+  //   }));
+  // },
+
+  // async findBy(categoryId: string): Promise<Placemark[]> {
+  //   const placemarks = await PlacemarkMongoose.find({ categoryId: categoryId })
+  //     .populate("placemark")
+  //     .populate("category")
+  //     .lean();
+
+  //   console.log("PLACEMARKS: ", placemarks);
+  //   return placemarks;
+  // },
+
+  async findBy(categoryId: string): Promise<Placemark[]> {
     try {
-      const newPlacemark = new PlacemarkMongoose({ ...placemark, categoryid: categoryId });
-      const saved = await newPlacemark.save();
-      return this.getPlacemarkById(saved._id.toString());
+      const objectId = new mongoose.Types.ObjectId(categoryId);
+      const placemarks = await PlacemarkMongoose.find({ category: objectId }) // ✅ use "category" not "categoryId"
+        .populate("category")
+        .lean();
+      console.log("PLACEMARKS: ", placemarks);
+      return placemarks;
     } catch (error) {
-      console.error("Error adding placemark:", error);
-      throw error;
+      console.error("Error in findBy:", error);
+      return [];
     }
-  },
-
-  async getPlacemarksByCategoryId(categoryId: string): Promise<Placemark[]> {
-    const placemarks = await PlacemarkMongoose.find({ categoryId }).lean();
-    return placemarks.map((p) => ({
-      ...p,
-      img: Array.isArray(p.img) ? p.img : []
-    }));
   },
 
   async getPlacemarkById(id: string): Promise<Placemark | null> {

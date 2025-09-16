@@ -211,7 +211,7 @@
 
   export async function refresh() {
     console.log("PlacemarkStats is refreshing");
-    await placemarkService.refreshPlacemarksInfo();
+    // await placemarkService.refreshPlacemarksInfo();
     placemarkSum = await sumPlacemarks();
     yesCounting = await getYesCounting();
     noCounting = await getNoCounting();
